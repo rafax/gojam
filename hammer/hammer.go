@@ -19,12 +19,12 @@ func main() {
 	scanner.Scan()
 	fmt.Fscanf(strings.NewReader(scanner.Text()), "%d", &testCases)
 	for i := 0; i < testCases; i++ {
-		fmt.Printf("Case #%v: %3.8f\n", i+1, solve(parseTestCase(scanner)))
+		fmt.Printf("Case #%v: %8v\n", i+1, solve(parseTestCase(scanner)))
 	}
 }
 
 func solve(v, d int) float64 {
-	sin := float64(d) * g / (float64(v) * float64(v))
+	sin := ((float64(d)) / (float64(v) * float64(v))) * g
 	return float64(28.647889756541160438399077407052585166202736233282) * math.Asin(sin)
 }
 
