@@ -30,20 +30,28 @@ func solve(l, u uint64) int {
 }
 
 func fairAndSquare(n uint64) bool {
-	return isPalindrome(n) && isSquare(n) && isSquareOfPalindrome(n)
+	if !isPalindrome(n) {
+		return false
+	}
+	sqrt := math.Sqrt(float64(n))
+	usqrt := uint64(sqrt)
+	if float64(usqrt) != sqrt {
+		return false
+	}
+	return isPalindrome(usqrt)
 }
 
 func isPalindrome(n uint64) bool {
-	return isPalindrome(n) && isSquare(n) && isSquareOfPalindrome(n)
+	str := strconv.FormatUint(n, 10)
+	strlen := len(str)
+	for i := 0; i < len(str)/2; i++ {
+		if str[i] != str[strlen-1-i] {
+			return false
+		}
+	}
+	return true
 }
 
-func isSquare(n uint64) bool {
-	return isPalindrome(n) && isSquare(n) && isSquareOfPalindrome(n)
-}
-
-func isSquareOfPalindrome(n uint64) bool {
-	return isPalindrome(n) && isSquare(n) && isSquareOfPalindrome(n)
-}
 func parseTestCase(scanner *bufio.Scanner) (uint64, uint64) {
 	scanner.Scan()
 	pair := strings.Split(scanner.Text(), " ")
