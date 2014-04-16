@@ -30,6 +30,10 @@ func solve(l, u uint64) int {
 }
 
 func fairAndSquare(n uint64) bool {
+	lsd := n % 10
+	if lsd == 2 || lsd == 3 || lsd == 7 || lsd == 8 {
+		return false
+	}
 	if !isPalindrome(n) {
 		return false
 	}
@@ -43,9 +47,9 @@ func fairAndSquare(n uint64) bool {
 
 func isPalindrome(n uint64) bool {
 	str := strconv.FormatUint(n, 10)
-	strlen := len(str)
+	str_bound := len(str) - 1
 	for i := 0; i < len(str)/2; i++ {
-		if str[i] != str[strlen-1-i] {
+		if str[i] != str[str_bound-i] {
 			return false
 		}
 	}
