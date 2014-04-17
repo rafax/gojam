@@ -5,50 +5,44 @@ import (
 	"fmt"
 	"math"
 	"os"
-	"sort"
 	"strconv"
 	"strings"
-	"time"
 )
 
-var palindromesOfLength map[int64][]string = map[int64][]string{}
+var palindromesOfLength map[uint64][]string = map[uint64][]string{}
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Text()
-	// 	var testCases int
-	// 	scanner.Scan()
-	// 	fmt.Fscanf(strings.NewReader(scanner.Text()), "%d", &testCases)
-	// 	for i := 0; i < testCases; i++ {
-	// 		fmt.Printf("Case #%v: %v\n", i+1, solve(parseTestCase(scanner)))
-	// 	}
-	for t := 0; t < 5; t++ {
-		start := time.Now()
-		for i := 1; i <= 14; i++ {
-			ln := int64(i)
-			pals := genPalindromesOfLength(ln)
-			fmt.Println(ln, len(pals))
-		}
-		fmt.Println(time.Since(start))
+	var testCases int
+	scanner.Scan()
+	fmt.Fscanf(strings.NewReader(scanner.Text()), "%d", &testCases)
+	for i := 0; i < testCases; i++ {
+		fmt.Printf("Case #%v: %v\n", i+1, solve(parseTestCase(scanner)))
 	}
 }
 
 func solve(l, u uint64) int {
 	cnt := 0
-	for i := l; i <= u; {
-		if fairAndSquare(i) {
-			cnt++
+	llen := len(strconv.FormatUint(l, 10))
+	ulen := len(strconv.FormatUint(u, 10))
+
+	for i := uint64(llen); i <= uint64(ulen); i++ {
+		pals := genPalindromesOfLength(i, func(str string) bool {
+			return str[0] != '2' && str[0] != '3' && str[0] != '7' && str[0] != '8'
+		})
+		for _, v := range pals {
+			cand, _ := strconv.ParseUint(v, 10, 64)
+			if l <= cand && cand <= u && fairAndSquare(cand) {
+				cnt++
+			}
+
 		}
-		// i = nextPalindrome(i)
 	}
 	return cnt
 }
 
 func fairAndSquare(n uint64) bool {
-	lsd := n % 10
-	if lsd == 2 || lsd == 3 || lsd == 7 || lsd == 8 {
-		return false
-	}
 	if !isPalindrome(n) {
 		return false
 	}
@@ -80,7 +74,7 @@ func parseTestCase(scanner *bufio.Scanner) (uint64, uint64) {
 	return l, u
 }
 
-func genPalindromesOfLength(i int64) []string {
+func genPalindromesOfLength(i uint64, filter func(string) bool) []string {
 	pals, present := palindromesOfLength[i]
 	if present {
 		return pals
@@ -88,32 +82,42 @@ func genPalindromesOfLength(i int64) []string {
 	res := []string{}
 	if i == 1 {
 		for i := int64(0); i < 10; i++ {
-			res = append(res, strconv.FormatInt(i, 10))
+			nu := strconv.FormatInt(i, 10)
+			if filter == nil || filter(nu) {
+				res = append(res, nu)
+			}
 		}
-
 	} else if i == 2 {
 		for i := int64(1); i < 10; i++ {
 			str := strconv.FormatInt(i, 10)
-			res = append(res, str+str)
+			nu := str + str
+			if filter == nil || filter(nu) {
+				res = append(res, nu)
+			}
 		}
 	} else {
-		smaller := genPalindromesOfLength(i - 1)
+		smaller := genPalindromesOfLength(i-1, filter)
 		if i%2 == 0 {
 			for _, v := range smaller {
 				half := v[:(len(v)/2)+1]
-				res = append(res, half+reverse(half))
+				nu := half + reverse(half)
+				if filter == nil || filter(nu) {
+					res = append(res, nu)
+				}
 			}
 		} else {
 			for i := int64(0); i < 10; i++ {
 				for _, v := range smaller {
 					half := v[:(len(v) / 2)]
-					res = append(res, half+strconv.FormatInt(i, 10)+reverse(half))
+					nu := half + strconv.FormatInt(i, 10) + reverse(half)
+					if filter == nil || filter(nu) {
+						res = append(res, nu)
+					}
 				}
 			}
 		}
 
 	}
-	sort.Strings(res)
 	palindromesOfLength[i] = res
 	return palindromesOfLength[i]
 }
@@ -126,17 +130,4 @@ func reverse(s string) string {
 		runes[n] = rune
 	}
 	return string(runes[n:])
-}
-
-func distinct(s []string) []string {
-	res := []string{}
-	uniq := map[string]bool{}
-	for _, v := range s {
-		_, present := uniq[v]
-		if !present {
-			uniq[v] = true
-			res = append(res, v)
-		}
-	}
-	return res
 }
