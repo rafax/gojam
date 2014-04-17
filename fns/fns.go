@@ -43,9 +43,6 @@ func solve(l, u uint64) int {
 }
 
 func fairAndSquare(n uint64) bool {
-	if !isPalindrome(n) {
-		return false
-	}
 	sqrt := math.Sqrt(float64(n))
 	usqrt := uint64(sqrt)
 	if float64(usqrt) != sqrt {
