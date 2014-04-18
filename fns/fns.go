@@ -33,8 +33,13 @@ func solve(l, u uint64) int {
 		})
 		for _, v := range pals {
 			cand, _ := strconv.ParseUint(v, 10, 64)
-			if l <= cand && cand <= u && fairAndSquare(cand) {
-				cnt++
+			if l <= cand {
+				if cand > u {
+					return cnt
+				}
+				if fairAndSquare(cand) {
+					cnt++
+				}
 			}
 
 		}
@@ -103,8 +108,8 @@ func genPalindromesOfLength(i uint64, filter func(string) bool) []string {
 				}
 			}
 		} else {
-			for i := int64(0); i < 10; i++ {
-				for _, v := range smaller {
+			for _, v := range smaller {
+				for i := int64(0); i < 10; i++ {
 					half := v[:(len(v) / 2)]
 					nu := half + strconv.FormatInt(i, 10) + reverse(half)
 					if filter == nil || filter(nu) {
